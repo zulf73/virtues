@@ -1,0 +1,5 @@
+> cor(summary_virtues_df)
+               inner     outer regulatory
+inner      1.0000000 0.9716957  0.9251361
+outer      0.9716957 1.0000000  0.9107108
+regulatory 0.9251361 0.9107108  1.0000000
