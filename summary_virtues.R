@@ -7,9 +7,18 @@ ui <- dashboardPage(
   dashboardBody(
     # Boxes need to be put in a row (or column)
     fluidRow(
-      valueBoxOutput("inner"),
-      valueBoxOutput("outer"),
-      valueBoxOutput("regulatory")
+      box(
+        title = "Inner", solidHeader = TRUE,
+        collapsible = TRUE,
+        valueBoxOutput("inner")),
+      box(
+        title = "Outer", solidHeader = TRUE,
+        collapsible = TRUE,
+        valueBoxOutput("outer")),
+      box(
+        title = "Regulatory", solidHeader = TRUE,
+        collapsible = TRUE,
+        valueBoxOutput("regulatory"))
     ),
     
     fluidRow(
@@ -57,7 +66,7 @@ regulatory_list <-c(
 )
 
 percentile<-function( x, v ){
-  pnorm( x, mean=mean(v), sd=sd(v))
+  floor(pnorm( x, mean=mean(v), sd=sd(v))*100.)
 }
 
 server <- function(input, output) {
