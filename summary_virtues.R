@@ -25,7 +25,7 @@ ui <- dashboardPage(
       box(
         title = "Controls",
         subtitle = "a",
-        sliderInput("slider", "Item number:", 1, 100, 50)
+        sliderInput("slider", "Item number:", 1, 1000, 50)
       )
     )
   )
@@ -70,11 +70,11 @@ percentile<-function( x, v ){
 }
 
 server <- function(input, output) {
-  virtues_data <- dfp1
+  virtues_data <- dfp
 
-  inner_vals <- rowSums(virtues_data[, inner_list])
-  outer_vals <- rowSums(virtues_data[, outer_list])
-  regulatory_vals <- rowSums(virtues_data[, regulatory_list])
+  inner_vals <- rowMeans(virtues_data[, inner_list])
+  outer_vals <- rowMeans(virtues_data[, outer_list])
+  regulatory_vals <- rowMeans(virtues_data[, regulatory_list])
 
   
   inner_perc <- function(j){ 
@@ -98,7 +98,7 @@ server <- function(input, output) {
   output$outer <- renderValueBox({
     valueBox(
       paste0(outer_perc(input$slider), "%"), 
-      subtitle = "Inner Virtues", 
+      subtitle = "Outer Virtues", 
       color = "aqua"
     )
   })

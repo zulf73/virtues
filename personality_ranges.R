@@ -229,22 +229,23 @@ virtVec <- c(
 )
 
 virtMtx <- matrix( virtVec,ncol=5, nrow=24)
-ivirtPFmtx <- matrix( ivirtPFvec, nrow=5, 
+ivirtPFmtx <- matrix( ivirtPFvec/100., nrow=5, 
                       ncol=5)
 
 virtPFmtx <- inv(ivirtPFmtx)
-ans <- (virtMtx/100.) %*% (virtPFmtx/100.) %*% bfv
+ans <- (virtMtx/100.) %*% (virtPFmtx) %*% bfv
 ans
 }
 
 prob.fem <- ghyp(lambda=1, alpha.bar=alpha.bar, mu=mu, sigma=sigmaBase, gamma=gamma)
-vf <- rghyp( 2000, prob.fem )
+vf <- rghyp( 10000, prob.fem )
 jvf <- t(jungTransform( vf ))
 typesf <- getPersonalityType( jvf, level = 2, ghfit )
 pact <- action_probs( vf )
 pspec <- B0 %*% PreFactor %*% t(vf)
 pvirt <- virtue_levels(t(vf))
 dfp <- data.frame( cbind( vf, pact, jvf,scale(t(pspec)),scale(t(pvirt)) ))
+
 dfp[,"ptype"] <- typesf
 
 names(dfp) <- c( "o", "c","e","a","n",
@@ -253,3 +254,61 @@ names(dfp) <- c( "o", "c","e","a","n",
                  "j5", bsri_desc, virtue_desc,
                  "ptype")
 dfp1 <- dfp %>% group_by( ptype ) %>% summarise_all(mean)
+# inner Courage Wisdom
+inner_list <-c(
+  "Creativity",
+  "Curiosity",
+  "LoveOfLearning",
+  "Perspective",
+  "Bravery",
+  "Persistence",
+  "Integrity",
+  "Zest"
+)
+
+# outer Humanity Justice
+outer_list <-c(
+  "Love",
+  "Kindness",
+  "SocialIntelligence",
+  "Fairness",
+  "Leadership"
+)
+
+# regulatory Transcendence, Temperance
+regulatory_list <-c(
+  "Forgiveness",
+  "Humility",
+  "Prudence",
+  "Self-Regulation",
+  "Appreciation",
+  "Gratitude",
+  "Hope",
+  "Humor",
+  "Spirituality"
+)
+
+percentile<-function( x, v ){
+  floor(pnorm( x, mean=mean(v), sd=sd(v))*100.)
+}
+
+virtues_data <- dfp
+
+inner_vals <- rowMeans(virtues_data[, inner_list])
+outer_vals <- rowMeans(virtues_data[, outer_list])
+regulatory_vals <- rowMeans(virtues_data[, regulatory_list])
+
+
+inner_perc <- function(j){ 
+  percentile( inner_vals[j], inner_vals )
+}
+outer_perc <- function(j){
+  percentile( outer_vals[j], outer_vals)
+}
+regulatory_perc <- function(j) {
+  percentile( regulatory_vals[j], regulatory_vals)
+}
+
+summary_virtues_df <- data.frame( inner = inner_vals,
+                                  outer = outer_vals,
+                                  regulatory = regulatory_vals)
